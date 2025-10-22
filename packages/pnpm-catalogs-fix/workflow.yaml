@@ -1,0 +1,8 @@
+version: "1"
+nodes:
+  - id: fix-catalogs
+    name: "Fix pnpm Catalog Configurations"
+    type: automatic
+    steps:
+      - name: "Fix catalog references"
+        run: node "$CODEMOD_PATH/dist/index.js"

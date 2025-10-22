@@ -1,0 +1,17 @@
+schema_version: "1.0"
+name: "pnpm-catalogs-fix"
+version: "0.1.0"
+description: "Fix incorrect pnpm catalog configurations in package.json and pnpm-workspace.yaml files"
+author: "Kingsword kingsword09 <kingsword09@gmail.com>"
+license: "Apache-2.0"
+workflow: "workflow.yaml"
+category: "migration"
+
+targets:
+  languages: ["typescript"]
+
+keywords: ["pnpm", "catalog", "workspace", "fix"]
+
+registry:
+  access: "public"
+  visibility: "public"

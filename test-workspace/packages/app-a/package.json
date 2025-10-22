@@ -1,0 +1,11 @@
+{
+  "name": "app-a",
+  "version": "1.0.0",
+  "dependencies": {
+    "react": "catalog:",
+    "lodash": "catalog:"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}

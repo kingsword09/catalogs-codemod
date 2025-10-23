@@ -4,6 +4,7 @@ import { api, type Api } from "@codemod.com/workflow";
 import type { Dirent } from "node:fs";
 import { readdir, readFile, stat } from "node:fs/promises";
 import { isAbsolute, join, resolve } from "node:path";
+import process from "node:process";
 
 const initialCwd = process.cwd();
 

@@ -1,0 +1,11 @@
+version: "1"
+
+nodes:
+  - id: migrate-to-bun
+    name: "Migrate pnpm catalogs to bun"
+    type: automatic
+    runtime:
+      type: direct
+    steps:
+      - name: "Migrate catalog configuration"
+        run: npx --yes pnpm-catalogs-to-bun

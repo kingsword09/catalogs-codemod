@@ -1,6 +1,6 @@
 {
   "name": "pnpm-catalogs-fix",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Codemod to fix incorrect pnpm catalog configurations",
   "license": "Apache-2.0",
   "main": "dist/index.js",
@@ -11,15 +11,22 @@
     "build": "tsc",
     "prepublishOnly": "pnpm build"
   },
-  "files": ["README.md", "codemod.yaml", "workflow.yaml", "dist/**/*.js"],
+  "files": [
+    "README.md",
+    "codemod.yaml",
+    "workflow.yaml",
+    "dist/**/*.js"
+  ],
   "keywords": [
     "pnpm",
     "catalog",
     "codemod",
     "fix"
   ],
+  "dependencies": {
+    "@codemod.com/workflow": "0.0.31"
+  },
   "devDependencies": {
-    "@codemod.com/workflow": "0.0.31",
     "@types/node": "^24.9.1",
     "typescript": "^5.9.3"
   }

@@ -9,10 +9,11 @@ importers:
   .: {}
 
   packages/pnpm-catalogs-fix:
-    devDependencies:
+    dependencies:
       '@codemod.com/workflow':
-        specifier: ^0.0.31
+        specifier: 0.0.31
         version: 0.0.31(@types/node@24.9.1)
+    devDependencies:
       '@types/node':
         specifier: ^24.9.1
         version: 24.9.1

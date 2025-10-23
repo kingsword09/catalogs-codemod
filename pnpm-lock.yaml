@@ -8,6 +8,19 @@ importers:
 
   .: {}
 
+  packages/bun-catalogs-to-pnpm:
+    dependencies:
+      '@codemod.com/workflow':
+        specifier: 0.0.31
+        version: 0.0.31(@types/node@24.9.1)
+    devDependencies:
+      '@types/node':
+        specifier: ^24.9.1
+        version: 24.9.1
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/pnpm-catalogs-fix:
     dependencies:
       '@codemod.com/workflow':

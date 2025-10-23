@@ -15,7 +15,7 @@ catalogs-codemod/
 
 ## pnpm-catalogs-fix in a nutshell
 
-`pnpm-catalogs-fix` is built with `@codemod.com/workflow`. The workflow scans a pnpm workspace, normalises `pnpm-workspace.yaml`, and rewrites `package.json` files so every dependency that belongs to a catalog uses the right `catalog:` specifier.
+`pnpm-catalogs-fix` scans a pnpm workspace, normalises `pnpm-workspace.yaml`, and rewrites `package.json` files so every dependency that belongs to a catalog uses the right `catalog:` specifier.
 
 It automatically resolves the workspace root. When you run the workflow from another folder, pass `--target <workspace>` (or set `WORKSPACE` / `WORKSPACE_DIR`); when you run it inside the workspace root, no extra flag is required.
 
@@ -60,7 +60,6 @@ Run the workflow with `--target test-workspace` to watch the codemod update both
 
 - [pnpm catalogs documentation](https://pnpm.io/catalogs)
 - [Codemod CLI packages quickstart](https://docs.codemod.com/cli/packages/quickstart)
-- [@codemod.com/workflow API](https://docs.codemod.com/cli/workflow-api)
 
 ## License
 

@@ -1,8 +1,9 @@
+#!/usr/bin/env node
+
 import { api, type Api } from "@codemod.com/workflow";
 import type { Dirent } from "node:fs";
 import { readdir, readFile, stat } from "node:fs/promises";
 import { isAbsolute, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 
 const initialCwd = process.cwd();
 
@@ -52,6 +53,7 @@ const isVersionRange = (version: string): boolean => {
 
 /**
  * Main workflow to fix catalog configurations
+ * This codemod fixes incorrect pnpm catalog references in workspace
  */
 export async function workflow({ files, dirs }: Api) {
   console.log('🔍 Scanning workspace for catalog configuration issues...\n');
@@ -470,10 +472,10 @@ async function hasCatalogFile(directory: string): Promise<boolean> {
   }
 }
 
+// CommonJS: check if this file is being executed directly
 const isExecutedAsScript =
-  typeof process !== "undefined" &&
-  typeof process.argv[1] === "string" &&
-  fileURLToPath(import.meta.url) === resolve(initialCwd, process.argv[1]);
+  typeof require !== "undefined" &&
+  require.main === module;
 
 if (isExecutedAsScript) {
   workflow(api).catch((error) => {

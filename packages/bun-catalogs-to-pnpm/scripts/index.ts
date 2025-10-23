@@ -9,8 +9,11 @@ const initialCwd = process.cwd();
 
 type PackageJson = {
   name?: string;
-  workspaces?: string[];
-  catalog?: Record<string, string>;
+  workspaces?: string[] | {
+    packages?: string[];
+    catalog?: Record<string, string>;
+    catalogs?: Record<string, Record<string, string>>;
+  };
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
@@ -28,10 +31,12 @@ type PnpmWorkspaceYaml = {
  * 
  * bun format (package.json):
  *   {
- *     "workspaces": ["packages/*"],
- *     "catalog": {
- *       "react": "^19.2.0",
- *       "lodash": "^4.17.21"
+ *     "workspaces": {
+ *       "packages": ["packages/*"],
+ *       "catalog": {
+ *         "react": "^19.2.0",
+ *         "lodash": "^4.17.21"
+ *       }
  *     }
  *   }
  * 
@@ -56,13 +61,33 @@ export async function workflow({ files }: typeof api) {
     return;
   }
 
-  if (!rootPackageJson.catalog || Object.keys(rootPackageJson.catalog).length === 0) {
-    console.log('⚠️  No catalog found in package.json');
-    console.log('💡 Nothing to migrate');
+  // Extract catalog from workspaces object (bun format)
+  const workspacesObj = typeof rootPackageJson.workspaces === 'object' && !Array.isArray(rootPackageJson.workspaces) 
+    ? rootPackageJson.workspaces 
+    : null;
+  const catalog = workspacesObj?.catalog;
+  const catalogs = workspacesObj?.catalogs;
+  
+  if (!catalog && !catalogs) {
+    console.log('⚠️  No catalog found in package.json workspaces');
+    console.log('💡 This codemod requires bun workspace with catalog configuration');
+    console.log('💡 Expected format: { "workspaces": { "catalog": {...} } }');
     return;
   }
 
-  console.log(`📊 Found ${Object.keys(rootPackageJson.catalog).length} catalog entries\n`);
+  // Merge all catalogs
+  const mergedCatalog: Record<string, string> = {};
+  if (catalog) {
+    Object.assign(mergedCatalog, catalog);
+  }
+  if (catalogs) {
+    for (const [name, cat] of Object.entries(catalogs)) {
+      console.log(`📦 Merging named catalog: ${name}`);
+      Object.assign(mergedCatalog, cat);
+    }
+  }
+
+  console.log(`📊 Found ${Object.keys(mergedCatalog).length} catalog entries\n`);
 
   // 2. Check if pnpm-workspace.yaml exists
   const pnpmWorkspaceFiles = files("pnpm-workspace.yaml").yaml();
@@ -70,13 +95,14 @@ export async function workflow({ files }: typeof api) {
     await pnpmWorkspaceFiles.map(({ getContents }) => getContents<PnpmWorkspaceYaml>())
   ).pop();
 
-  const workspacePackages = rootPackageJson.workspaces || ['packages/*'];
+  const workspacePackages = workspacesObj?.packages || 
+    (Array.isArray(rootPackageJson.workspaces) ? rootPackageJson.workspaces : ['packages/*']);
 
   // 3. Create or update pnpm-workspace.yaml
   if (existingWorkspace) {
     console.log('📝 Updating existing pnpm-workspace.yaml');
     await pnpmWorkspaceFiles.update<PnpmWorkspaceYaml>((workspace) => {
-      workspace.catalog = rootPackageJson.catalog;
+      workspace.catalog = mergedCatalog;
       
       if (!workspace.packages) {
         workspace.packages = workspacePackages;
@@ -87,7 +113,7 @@ export async function workflow({ files }: typeof api) {
   } else {
     console.log('📝 Creating pnpm-workspace.yaml');
     // Create new pnpm-workspace.yaml
-    const yamlContent = `packages:\n${workspacePackages.map(p => `  - '${p}'`).join('\n')}\n\ncatalog:\n${Object.entries(rootPackageJson.catalog!)
+    const yamlContent = `packages:\n${workspacePackages.map((p: string) => `  - '${p}'`).join('\n')}\n\ncatalog:\n${Object.entries(mergedCatalog)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([name, version]) => `  ${name}: ${version}`)
       .join('\n')}\n`;
@@ -97,15 +123,18 @@ export async function workflow({ files }: typeof api) {
 
   console.log('✅ Created/updated pnpm-workspace.yaml with catalog');
 
-  // 4. Remove catalog from root package.json
+  // 4. Remove catalog from root package.json (convert workspaces back to array)
   await rootPackageJsonFiles.update<PackageJson>((pkg) => {
-    delete pkg.catalog;
-    console.log('✅ Removed catalog from root package.json');
+    // Convert workspaces object back to array
+    if (typeof pkg.workspaces === 'object' && !Array.isArray(pkg.workspaces) && pkg.workspaces.packages) {
+      pkg.workspaces = pkg.workspaces.packages;
+    }
+    console.log('✅ Removed catalog from package.json and converted workspaces to array format');
     return pkg;
   });
 
   // 5. Verify workspace packages still have catalog: references
-  const packageJsonGlobs = workspacePackages.map(p => `${p}/package.json`);
+  const packageJsonGlobs = workspacePackages.map((p: string) => `${p}/package.json`);
   
   let packagesWithCatalog = 0;
   await files(packageJsonGlobs)

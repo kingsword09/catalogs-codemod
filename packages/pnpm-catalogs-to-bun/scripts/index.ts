@@ -5,8 +5,11 @@ import process from "node:process";
 
 type PackageJson = {
   name?: string;
-  workspaces?: string[];
-  catalog?: Record<string, string>;
+  workspaces?: string[] | {
+    packages?: string[];
+    catalog?: Record<string, string>;
+    catalogs?: Record<string, Record<string, string>>;
+  };
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
@@ -23,16 +26,20 @@ type PnpmWorkspaceYaml = {
  * Migrate from pnpm workspace catalog to bun catalog
  * 
  * pnpm format (pnpm-workspace.yaml):
+ *   packages:
+ *     - packages/*
  *   catalog:
  *     react: ^19.2.0
  *     lodash: ^4.17.21
  * 
  * bun format (package.json):
  *   {
- *     "workspaces": ["packages/*"],
- *     "catalog": {
- *       "react": "^19.2.0",
- *       "lodash": "^4.17.21"
+ *     "workspaces": {
+ *       "packages": ["packages/*"],
+ *       "catalog": {
+ *         "react": "^19.2.0",
+ *         "lodash": "^4.17.21"
+ *       }
  *     }
  *   }
  */
@@ -85,20 +92,19 @@ export async function workflow({ files }: typeof api) {
 
   console.log(`📊 Found ${Object.keys(mergedCatalog).length} catalog entries\n`);
 
-  // 4. Update root package.json with catalog
+  // 4. Update root package.json with catalog (bun format)
   await rootPackageJsonFiles.update<PackageJson>((pkg) => {
-    // Ensure workspaces exist
-    if (!pkg.workspaces && pnpmWorkspaceData.packages) {
-      pkg.workspaces = pnpmWorkspaceData.packages;
-      console.log('✅ Added workspaces configuration');
-    }
+    const workspacePackages = pnpmWorkspaceData.packages || ['packages/*'];
+    
+    // Convert to bun's workspaces object format
+    pkg.workspaces = {
+      packages: workspacePackages,
+      catalog: Object.fromEntries(
+        Object.entries(mergedCatalog).sort(([a], [b]) => a.localeCompare(b))
+      )
+    };
 
-    // Add catalog
-    pkg.catalog = Object.fromEntries(
-      Object.entries(mergedCatalog).sort(([a], [b]) => a.localeCompare(b))
-    );
-
-    console.log('✅ Added catalog to root package.json');
+    console.log('✅ Added catalog to root package.json (bun format)');
     
     return pkg;
   });
@@ -106,6 +112,8 @@ export async function workflow({ files }: typeof api) {
   // 5. Update all package.json files to use catalog: references
   const packageGlobs = pnpmWorkspaceData.packages || ['packages/*'];
   const packageJsonGlobs = packageGlobs.map(p => `${p}/package.json`);
+  
+  console.log('\n🔍 Checking workspace packages...');
   
   await files(packageJsonGlobs)
     .json()

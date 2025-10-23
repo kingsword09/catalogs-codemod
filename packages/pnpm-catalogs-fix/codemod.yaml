@@ -1,6 +1,6 @@
 schema_version: "1.0"
 name: "pnpm-catalogs-fix"
-version: "0.1.0"
+version: "0.1.8"
 description: "Fix incorrect pnpm catalog configurations in package.json and pnpm-workspace.yaml files"
 author: "Kingsword kingsword09 <kingsword09@gmail.com>"
 license: "Apache-2.0"
@@ -15,3 +15,7 @@ keywords: ["pnpm", "catalog", "workspace", "fix"]
 registry:
   access: "public"
   visibility: "public"
+
+meta:
+  git: "https://github.com/kingsword09/catalogs-codemod"
+  tags: ["pnpm", "catalog", "fix", "workspace"]

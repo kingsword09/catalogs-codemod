@@ -1,48 +1,101 @@
-# pnpm-catalogs-fix
+# pnpm Catalogs Fix
 
-A `codemod` package for automatically correcting pnpm catalog references across `package.json` files and the workspace manifest.
+Automatically resolves broken pnpm catalog references across `pnpm-workspace.yaml` and `package.json` files. The workflow de-references nested `catalog:` values, reconciles catalog definitions, and rewrites package dependencies so every consumer points back to the catalog.
 
-## Overview
+## Example
 
-- Codemod packages bundle reusable workflows and transformations that run through the Codemod CLI. This package focuses on pnpm workspaces and keeps catalog-managed dependencies aligned.
-- The workflow enforces `catalog:` specifiers in consumer `package.json` files and restores explicit version ranges inside `pnpm-workspace.yaml`, including named catalogs such as `catalog:dev`.
-- The entry point (`dist/index.js`) detects the workspace root automatically: provide `--target <workspace>` (or set `WORKSPACE` / `WORKSPACE_DIR`) when executing the workflow from another directory.
+### Resolve chained catalog entries
 
-## What it fixes
+**Before:**
+```yaml
+catalog:
+  react: "catalog:legacy"
+catalogs:
+  legacy:
+    react: "^18.2.0"
+```
 
-- Rewrites direct semver ranges in catalog-managed dependencies (for example, replacing `"react": "^18.0.0"` with `"react": "catalog:"`).
-- Normalises workspace catalog definitions so they map to real version ranges instead of nested `catalog:` references.
-- Aligns named catalogs across packages to ensure each alias resolves to the intended version.
+**After:**
+```yaml
+catalog:
+  react: "^18.2.0"
+catalogs:
+  legacy:
+    react: "^18.2.0"
+```
 
-## Quickstart
+### Enforce catalog usage in packages
 
-1. Build the TypeScript sources to `dist/` before running the codemod locally:
-   ```bash
-   pnpm build --filter pnpm-catalogs-fix
-   ```
-2. Validate the workflow wiring:
-   ```bash
-   npx codemod workflow validate --workflow packages/pnpm-catalogs-fix/workflow.yaml
-   ```
-3. Execute the codemod against a workspace (replace `<workspace>` with the root you want to fix):
-   ```bash
-   npx codemod workflow run \
-     --workflow packages/pnpm-catalogs-fix/workflow.yaml \
-     --target <workspace>
-   ```
-4. To run the published package directly from any workspace, invoke the CLI command:
-   ```bash
-   npx codemod pnpm/catalogs-fix
-   ```
+**Before:**
+```json
+{
+  "name": "app-a",
+  "dependencies": {
+    "react": "^18.2.0"
+  }
+}
+```
 
-## Package layout
+**After:**
+```json
+{
+  "name": "app-a",
+  "dependencies": {
+    "react": "catalog:"
+  }
+}
+```
 
-- `codemod.yaml` declares the package metadata, targeted files, and inclusion rules that register the `pnpm/catalogs-fix` slug.
-- `workflow.yaml` defines the `fix-catalogs` node that runs `node dist/index.js`, mirroring the quickstart guidance for wiring workflows to compiled entrypoints.
-- `src/` contains the TypeScript implementation, while `dist/` holds the compiled JavaScript consumed by the workflow.
-- `package.json` specifies build scripts and dependencies required to ship the package.
+## Usage
 
-## Further reading
+### Via Codemod CLI (Recommended)
 
-- [Codemod CLI packages quickstart](https://docs.codemod.com/cli/packages/quickstart)
-- [pnpm catalogs documentation](https://pnpm.io/catalogs)
+```bash
+cd your-workspace
+npx codemod pnpm-catalogs-fix
+```
+
+### Direct Execution
+
+Run TypeScript directly with Node.js 20.6+ (no build required):
+
+```bash
+cd your-workspace
+node --experimental-strip-types path/to/pnpm-catalogs-fix/src/index.ts
+```
+
+Or specify workspace path:
+```bash
+node --experimental-strip-types path/to/pnpm-catalogs-fix/src/index.ts --workspace path/to/workspace
+```
+
+Alternatively, build and run the compiled JavaScript:
+
+```bash
+pnpm build --filter pnpm-catalogs-fix
+node path/to/pnpm-catalogs-fix/dist/index.js
+```
+
+## How It Works
+
+The codemod uses `@codemod.com/workflow` API (version 0.0.31) to:
+
+1. **Locate workspace**: Automatically finds `pnpm-workspace.yaml` with catalog definitions
+2. **Resolve catalog chains**: Recursively resolves `catalog:` references pointing to other catalogs
+3. **Fix workspace catalogs**: Updates `pnpm-workspace.yaml` with resolved versions
+4. **Normalize package.json**: Replaces explicit versions with `catalog:` references where appropriate
+5. **Report changes**: Provides detailed output of all fixes applied
+
+The workflow locates `pnpm-workspace.yaml`, resolves catalog chains, normalises catalog definitions, and rewrites any workspace packages to reference the catalog version.
+
+## Technical Details
+
+- **Runtime**: Node.js 20.6+ with native TypeScript support (`--experimental-strip-types`)
+- **Language**: TypeScript (ESM)
+- **Dependencies**: `@codemod.com/workflow` 0.0.31
+- **Workflow Version**: codemod.com workflow schema v1
+
+## Requirements
+
+- Node.js 20.6+ (for native TypeScript support)
+- pnpm workspace with `pnpm-workspace.yaml`

@@ -15,7 +15,7 @@ catalogs-codemod/
 
 ## pnpm-catalogs-fix 概览
 
-`pnpm-catalogs-fix` 由 `@codemod.com/workflow` 构建。该 workflow 会扫描 pnpm 工作区，规范化 `pnpm-workspace.yaml`，并改写各个 `package.json`，让属于 catalog 的依赖全部使用正确的 `catalog:` 前缀。
+`pnpm-catalogs-fix` 会扫描 pnpm 工作区，规范化 `pnpm-workspace.yaml`，并改写各个 `package.json`，让属于 catalog 的依赖全部使用正确的 `catalog:` 前缀。
 
 workflow 会自动推断工作区根目录：
 - 如果在仓库外部运行，请使用 `--target <workspace>`（或设置 `WORKSPACE` / `WORKSPACE_DIR` 环境变量）。
@@ -62,7 +62,6 @@ workflow 会自动推断工作区根目录：
 
 - [pnpm Catalogs 文档](https://pnpm.io/catalogs)
 - [Codemod CLI Packages 快速上手](https://docs.codemod.com/cli/packages/quickstart)
-- [@codemod.com/workflow API](https://docs.codemod.com/cli/workflow-api)
 
 ## 许可证
 

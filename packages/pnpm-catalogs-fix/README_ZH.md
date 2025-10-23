@@ -1,49 +1,60 @@
-# pnpm-catalogs-fix
+# pnpm Catalogs Fix
 
-`pnpm-catalogs-fix` 是一个 `codemod` 包，可自动修复 pnpm 工作区中 `pnpm-workspace.yaml` 与各个 `package.json` 的 catalog 引用。
+`pnpm-catalogs-fix` 是一个 Codemod 包，用于自动修复 pnpm 工作区中 `pnpm-workspace.yaml` 与各个 `package.json` 的 catalog 引用，使工作区依赖全部回归到统一管理的 catalog 版本。
 
-## 概览
+## 示例
 
-- Codemod 包通过 Codemod CLI 提供可复用的工作流与转换。该包专注于 pnpm 工作区，让 catalog 管理的依赖保持一致。
-- Workflow 会在 `package.json` 中强制使用 `catalog:` 前缀，并在 `pnpm-workspace.yaml` 中恢复实际的版本号（包括 `catalog:dev` 等命名 catalog）。
-- 入口文件（`dist/index.js`）会自动侦测工作区根目录：如果从其他目录运行，可传入 `--target <workspace>` 或设置 `WORKSPACE` / `WORKSPACE_DIR` 环境变量。
+### 解开链式 catalog 引用
 
-## 可以修复的问题
+**Before:**
+```yaml
+catalog:
+  react: "catalog:legacy"
+catalogs:
+  legacy:
+    react: "^18.2.0"
+```
 
-- 将 catalog 管理的依赖从具体 semver 范围改写为 `catalog:` 前缀，例如把 `"react": "^18.0.0"` 修正为 `"react": "catalog:"`。
-- 规范化 `pnpm-workspace.yaml` 中的 catalog 配置，使其对应真实的版本范围，而不是再引用 `catalog:`。
-- 处理命名 catalog，让别名能正确映射到预期版本。
+**After:**
+```yaml
+catalog:
+  react: "^18.2.0"
+catalogs:
+  legacy:
+    react: "^18.2.0"
+```
 
-## 快速开始
+### 在各 package.json 中强制回归 catalog
 
-1. **编译 TypeScript 源码**：
+**Before:**
+```json
+{
+  "name": "app-a",
+  "dependencies": {
+    "react": "^18.2.0"
+  }
+}
+```
+
+**After:**
+```json
+{
+  "name": "app-a",
+  "dependencies": {
+    "react": "catalog:"
+  }
+}
+```
+
+## 使用方式
+
+1. **在本地修改后重新编译 TypeScript：**
    ```bash
    pnpm build --filter pnpm-catalogs-fix
    ```
-2. **校验 workflow 配置**：
+2. **在工作区根目录运行 codemod（也可使用 `--workspace <path>` 或设置 `WORKSPACE_DIR` / `WORKSPACE` 环境变量指定目标）：**
    ```bash
-   npx codemod workflow validate --workflow packages/pnpm-catalogs-fix/workflow.yaml
-   ```
-3. **在指定工作区运行 codemod**（将 `<workspace>` 替换为工作区路径）：
-   ```bash
-   npx codemod workflow run \
-     --workflow packages/pnpm-catalogs-fix/workflow.yaml \
-     --target <workspace>
-   ```
-4. **直接运行已发布的 Codemod 包**：
-   ```bash
-   npx codemod pnpm/catalogs-fix
+   npx codemod pnpm-catalogs-fix
    ```
 
-## 包结构
-
-- `codemod.yaml`：定义包的元信息、目标文件以及 `pnpm/catalogs-fix` 的注册信息。
-- `workflow.yaml`：声明 `fix-catalogs` 节点，并通过 `node dist/index.js` 调用编译产物。
-- `src/`：TypeScript 实现代码。
-- `dist/`：供 workflow 使用的编译后 JavaScript。
-- `package.json`：包含脚本与依赖定义。
-
-## 延伸阅读
-
-- [Codemod CLI Packages 快速上手](https://docs.codemod.com/cli/packages/quickstart)
-- [pnpm Catalogs 官方文档](https://pnpm.io/catalogs)
+运行时脚本会自动定位 `pnpm-workspace.yaml`，解析并整理 catalog 定义，再把各 package.json 里的依赖改写为 `catalog:` 前缀或给出需要人工确认的提示。

@@ -1,8 +1,11 @@
 version: "1"
+
 nodes:
   - id: fix-catalogs
     name: "Fix pnpm Catalog Configurations"
     type: automatic
+    runtime:
+      type: direct
     steps:
-      - name: "Fix catalog references"
-        run: node "$CODEMOD_PATH/dist/index.js"
+      - name: "Fix catalog references in workspace"
+        run: npx --yes pnpm-catalogs-fix

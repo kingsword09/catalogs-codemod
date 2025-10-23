@@ -1,7 +1,7 @@
 {
-  "name": "pnpm-catalogs-fix",
-  "version": "0.2.0",
-  "description": "Codemod to fix incorrect pnpm catalog configurations in package.json and pnpm-workspace.yaml files",
+  "name": "pnpm-catalogs-to-bun",
+  "version": "0.1.0",
+  "description": "Migrate pnpm workspace catalogs to bun catalog format",
   "license": "Apache-2.0",
   "author": {
     "name": "Kingsword",
@@ -11,15 +11,19 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/kingsword09/catalogs-codemod.git",
-    "directory": "packages/pnpm-catalogs-fix"
+    "directory": "packages/pnpm-catalogs-to-bun"
   },
-  "homepage": "https://github.com/kingsword09/catalogs-codemod/tree/main/packages/pnpm-catalogs-fix#readme",
+  "homepage": "https://github.com/kingsword09/catalogs-codemod/tree/main/packages/pnpm-catalogs-to-bun#readme",
   "bugs": {
     "url": "https://github.com/kingsword09/catalogs-codemod/issues"
   },
   "main": "dist/index.js",
   "bin": {
-    "pnpm-catalogs-fix": "./dist/index.js"
+    "pnpm-catalogs-to-bun": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "pnpm build"
   },
   "files": [
     "README.md",
@@ -27,22 +31,18 @@
     "workflow.yaml",
     "dist/**/*.js"
   ],
-  "scripts": {
-    "build": "tsc",
-    "prepublishOnly": "pnpm build"
-  },
   "keywords": [
     "pnpm",
+    "bun",
     "catalog",
     "workspace",
-    "codemod",
-    "fix",
     "migration",
+    "codemod",
     "monorepo"
   ],
   "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=9.5.0"
+    "node": ">=20.0.0",
+    "bun": ">=1.1.30"
   },
   "dependencies": {
     "@codemod.com/workflow": "0.0.31"

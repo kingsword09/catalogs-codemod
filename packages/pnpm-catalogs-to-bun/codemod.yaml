@@ -1,0 +1,21 @@
+schema_version: "1.0"
+name: "pnpm-catalogs-to-bun"
+version: "0.1.0"
+description: "Migrate pnpm workspace catalogs to bun catalog format"
+author: "Kingsword kingsword09 <kingsword09@gmail.com>"
+license: "Apache-2.0"
+workflow: "workflow.yaml"
+category: "migration"
+
+targets:
+  languages: ["typescript", "javascript"]
+
+keywords: ["pnpm", "bun", "catalog", "workspace", "migration"]
+
+registry:
+  access: "public"
+  visibility: "public"
+
+meta:
+  git: "https://github.com/kingsword09/catalogs-codemod"
+  tags: ["pnpm", "bun", "catalog", "migration", "workspace"]

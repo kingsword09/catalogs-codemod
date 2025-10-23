@@ -1,0 +1,10 @@
+{
+  "name": "test-workspace",
+  "private": true,
+  "workspaces": [],
+  "catalog": {
+    "lodash": "^4.17.21",
+    "react": "^19.2.0",
+    "typescript": "^5.3.0"
+  }
+}

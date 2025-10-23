@@ -6,9 +6,9 @@ A collection of codemod packages for working with pnpm and bun catalog configura
 
 This repository contains three codemod packages:
 
-- **[pnpm-catalogs-fix](packages/pnpm-catalogs-fix)** - Fix incorrect pnpm catalog configurations
-- **[pnpm-catalogs-to-bun](packages/pnpm-catalogs-to-bun)** - Migrate pnpm workspace catalogs to bun format
-- **[bun-catalogs-to-pnpm](packages/bun-catalogs-to-pnpm)** - Migrate bun catalog to pnpm workspace format
+- **[pnpm-catalogs-fix](https://app.codemod.com/registry/pnpm-catalogs-fix)** - Fix incorrect pnpm catalog configurations
+- **[pnpm-catalogs-to-bun](https://app.codemod.com/registry/pnpm-catalogs-to-bun)** - Migrate pnpm workspace catalogs to bun format
+- **[bun-catalogs-to-pnpm](https://app.codemod.com/registry/bun-catalogs-to-pnpm)** - Migrate bun catalog to pnpm workspace format
 
 ## Repository layout
 

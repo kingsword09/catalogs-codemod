@@ -6,9 +6,9 @@
 
 本仓库包含三个 codemod 包：
 
-- **[pnpm-catalogs-fix](packages/pnpm-catalogs-fix)** - 修复错误的 pnpm catalog 配置
-- **[pnpm-catalogs-to-bun](packages/pnpm-catalogs-to-bun)** - 将 pnpm workspace catalogs 迁移到 bun 格式
-- **[bun-catalogs-to-pnpm](packages/bun-catalogs-to-pnpm)** - 将 bun catalog 迁移到 pnpm workspace 格式
+- **[pnpm-catalogs-fix](https://app.codemod.com/registry/pnpm-catalogs-fix)** - 修复错误的 pnpm catalog 配置
+- **[pnpm-catalogs-to-bun](https://app.codemod.com/registry/pnpm-catalogs-to-bun)** - 将 pnpm workspace catalogs 迁移到 bun 格式
+- **[bun-catalogs-to-pnpm](https://app.codemod.com/registry/bun-catalogs-to-pnpm)** - 将 bun catalog 迁移到 pnpm workspace 格式
 
 ## 仓库结构
 

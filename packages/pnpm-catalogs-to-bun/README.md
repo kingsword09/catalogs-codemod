@@ -32,11 +32,13 @@ catalog:
 
 ```json
 {
-  "workspaces": ["packages/*"],
-  "catalog": {
-    "lodash": "^4.17.21",
-    "react": "^19.2.0",
-    "typescript": "^5.3.0"
+  "workspaces": {
+    "packages": ["packages/*"],
+    "catalog": {
+      "lodash": "^4.17.21",
+      "react": "^19.2.0",
+      "typescript": "^5.3.0"
+    }
   }
 }
 ```

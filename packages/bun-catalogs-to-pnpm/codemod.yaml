@@ -1,6 +1,6 @@
 schema_version: "1.0"
 name: "bun-catalogs-to-pnpm"
-version: "0.1.0"
+version: "0.1.1"
 description: "Migrate bun catalog to pnpm workspace catalogs format"
 author: "Kingsword kingsword09 <kingsword09@gmail.com>"
 license: "Apache-2.0"

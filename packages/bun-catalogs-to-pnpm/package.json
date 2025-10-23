@@ -1,6 +1,6 @@
 {
   "name": "bun-catalogs-to-pnpm",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Migrate bun catalog to pnpm workspace catalogs format",
   "license": "Apache-2.0",
   "author": {

@@ -1,11 +1,7 @@
 #!/usr/bin/env node
 
-import { api, type Api } from "@codemod.com/workflow";
-import { readFile, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { api } from "@codemod.com/workflow";
 import process from "node:process";
-
-const initialCwd = process.cwd();
 
 type PackageJson = {
   name?: string;
